@@ -8,7 +8,7 @@
 body {
     font-family: "Copperplate Gothic 29 BC", serif;
     background-color: #202138;
-    background-image: url(JeweledLotus.png);
+    background-image: url("JeweledLotus.png");
     background-size: cover;
     color: white;
 }
