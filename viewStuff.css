@@ -1,0 +1,68 @@
+#btnCreateStorage:hover {
+    background-color: #53456846;
+}
+
+.ResultBox {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+.result {
+    display: flex;
+    align-items: center;  
+    margin-bottom: 8px;
+    position: relative;
+    padding: 0 15px;
+    width: 99%
+}
+
+/* Result Table styles */
+.card-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.card-table th {
+    color: white;
+    text-align: left;
+    padding: 12px 15px;
+    font-weight: bold;
+    font-size: 1.6em;
+}
+
+.card-table td {
+    padding: 0 15px;
+    border-bottom: 1px solid #202138;
+    border-width: 8px;
+    font-size: 1.2em;
+    height: 4vh;            
+    background-color: #53456846;
+}
+
+.card-table tbody tr:hover {
+    background-color: #53456846;
+}
+.card-table thead tr:hover {
+    background-color: transparent; /* Ensure no hover effect on header */
+}
+.actions {
+    margin-bottom: 20px;
+}
+
+
+button:hover {
+    background-color: #4a4a70;
+}
+
+.options-button {
+    color: #ddd;
+    font-weight: bold;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+}

@@ -1,0 +1,67 @@
+@font-face {
+    font-family: "Copperplate Gothic 29 BC";
+    src: url("/Font/Copperplate-Gothic-Std-29-BC.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: "Copperplate Gothic 29 BC", serif;
+    background-color: #202138;
+    background-image: url(/Images/JeweledLotus.png);
+    background-size: cover;
+    color: white;
+}
+
+button, textarea{
+    font-family: "Copperplate Gothic 29 BC", serif;
+    background-color: #534568;
+    color: white;
+    border:black;
+    border-width: 100;
+}
+
+.Content{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    height: 100vh;
+}
+
+h,h2{
+    margin: 0;
+    padding:0;
+}
+h2{
+    font-size: 6vw;
+}
+h{
+    font-size: 3vw;
+}
+
+textarea{
+    width: 50vw;
+    align-self: center;
+    font-size: 2vh;
+    height: 3vh;
+    overflow: hidden;
+    resize: none; 
+    border: 1px solid black;
+}
+
+.Buttons{
+    align-self: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 50vw;
+}
+
+button{
+    flex: 1;
+    height: 3vh;
+    border: 1px solid black;
+    margin: 5px;
+}

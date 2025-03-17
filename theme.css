@@ -1,0 +1,42 @@
+@font-face {
+    font-family: "Copperplate Gothic 29 BC";
+    src: url("/Font/Copperplate-Gothic-Std-29-BC.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    font-family: "Copperplate Gothic 29 BC", serif;
+    background-color: #202138;
+    color: white;
+}
+
+.TopPage{
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+    justify-content: center;
+    padding-bottom: 20px;
+    height: 4vh;
+}
+
+button, textarea{
+    font-family: "Copperplate Gothic 29 BC", serif;
+    background-color: #534568;
+    color: white;
+    border: 1px solid black;
+    margin: 5px;
+    border-radius: 10px;
+}
+
+button {
+    width: 20%; 
+}
+
+textarea {
+    width: 80%;
+    font-size: 2em;
+    overflow: hidden;
+    resize: none;
+    line-height: 1.2em;
+}
