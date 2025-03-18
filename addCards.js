@@ -1,3 +1,4 @@
+import { getCardType, getCardCost, attachHoverEffectToArtCells } from "getCardData.js";
 document.addEventListener("DOMContentLoaded", function () {
     // Function to get current date in MM/DD/YYYY format
     function getCurrentDate() {
@@ -239,7 +240,10 @@ function quoteCSVValue(value) {
                         tr.appendChild(optionsTd);
                         
                         tableBody.appendChild(tr);
+                        getCardType(cardName, tr);
+                        getCardCost(cardName, tr);
                     }
+                    attachHoverEffectToArtCells();
                 };
                 reader.readAsText(file);
             }
