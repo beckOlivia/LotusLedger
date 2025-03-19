@@ -158,7 +158,7 @@ function quoteCSVValue(value) {
     document.getElementById("btnAddCards").addEventListener("click", function () {
         const input = document.createElement("input");
         input.type = "file";
-        input.accept = ".csv";
+        input.accept = ".txt";
 
         input.addEventListener("change", function (event) {
             const file = event.target.files[0];
