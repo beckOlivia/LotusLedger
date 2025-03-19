@@ -49,6 +49,59 @@ export function calculateTotalMana(manaCost) {
     return total;
 }
 
+export function getManaColors(cardName, row) {
+    let apiUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            if (data.object === "card") {
+                let manaCost = data.mana_cost || ""; // Raw mana cost string
+                let typeCell = row.cells[4]; // Ensure row is passed in as an argument
+
+                if (typeCell) {
+                    typeCell.innerHTML = ""; // Clear previous content
+
+                    // Fetch symbology once
+                    fetch(`https://api.scryfall.com/symbology`)
+                        .then(response => response.json())
+                        .then(symbolData => {
+                            let symbols = extractSymbols(manaCost);
+                            symbols.forEach(symbol => {
+                                makeSymbol(symbol, symbolData, typeCell);
+                            });
+                        })
+                        .catch(error => console.error("Error fetching symbology:", error));
+                }
+            }
+        })
+        .catch(error => {
+            console.error(`Error fetching card data for ${cardName}:`, error);
+        });
+}
+
+// Extracts individual symbols (e.g., ["3", "W", "U"]) from a mana cost string
+function extractSymbols(manaCost) {
+    let matches = manaCost.match(/\{([^}]+)\}/g) || []; // Find all `{X}` patterns
+    return matches.map(match => match.replace(/[{}]/g, "")); // Remove `{}` brackets
+}
+
+// Helper function to append symbol images
+function makeSymbol(symbol, symbolData, typeCell) {
+    let foundSymbol = symbolData.data.find(s => s.symbol === `{${symbol}}`);
+
+    // If symbol is a number, use its direct URL
+    let imageUrl = foundSymbol ? foundSymbol.svg_uri : `https://c2.scryfall.com/file/scryfall-symbols/card-symbols/${symbol}.svg`;
+
+    let img = document.createElement("img");
+    img.src = imageUrl;
+    img.alt = symbol;
+    img.style.width = "20px"; // Adjust size as needed
+    img.style.marginRight = "5px";
+    typeCell.appendChild(img);
+}
+
+
 export function getCardCost(cardName, row) {
     let apiUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`;
 
