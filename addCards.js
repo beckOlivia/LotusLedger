@@ -1,4 +1,4 @@
-import { getCardType, getCardCost, attachHoverEffectToArtCells } from "/getCardData.js";
+import { getCardType, getCardCost, attachHoverEffectToArtCells } from "./getCardData.js";
 document.addEventListener("DOMContentLoaded", function () {
     // Function to get current date in MM/DD/YYYY format
     function getCurrentDate() {
