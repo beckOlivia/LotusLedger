@@ -17,7 +17,8 @@ body {
     align-self: center;
     justify-content: center;
     padding-bottom: 20px;
-    height: 50px;
+    height: 4vh;
+    min-height: 100px;
 }
 
 button, textarea{
