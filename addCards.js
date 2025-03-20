@@ -118,7 +118,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Function to export table data as CSV
 function exportToCSV() {
     const rows = [];
-    const tableBody = document.getElementById("cardTableBody");
+    const tableBody = document.getElementById("displayTableBody");
 
     // Add header row
     rows.push(["Quantity", "Name", "Set", "Art"]);
@@ -174,7 +174,7 @@ function quoteCSVValue(value) {
                     const columnMapping = getColumnMapping(rows[0]);
                     
                     // Clear previous table content
-                    const tableBody = document.getElementById("cardTableBody");
+                    const tableBody = document.getElementById("displayTableBody");
                     tableBody.innerHTML = "";
                     
                     // Get current date for "Last Updated" field
