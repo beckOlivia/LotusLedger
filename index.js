@@ -9,5 +9,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("btnViewLibrary").addEventListener("click", function(e) {
         window.location.href = "viewLibrary.html";
     });
+    
+    document.getElementById("btnViewStorage").addEventListener("click", function(e) {
+        window.location.href = "viewStorage.html";
+    });
 });
 
