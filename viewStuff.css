@@ -20,13 +20,13 @@
 }
 
 /* Result Table styles */
-.card-table {
+.display-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
 
-.card-table th {
+.display-table th {
     color: white;
     text-align: left;
     padding: 12px 15px;
@@ -34,7 +34,7 @@
     font-size: 1.6em;
 }
 
-.card-table td {
+.display-table td {
     padding: 0 15px;
     border-bottom: 1px solid #202138;
     border-width: 8px;
@@ -43,15 +43,16 @@
     background-color: #53456846;
 }
 
-.card-table tbody tr:hover {
+.display-table tbody tr:hover {
     background-color: #53456846;
 }
-.card-table thead tr:hover {
+.display-table thead tr:hover {
     background-color: transparent; /* Ensure no hover effect on header */
 }
 .actions {
     margin-bottom: 20px;
 }
+
 
 
 button:hover {
@@ -65,4 +66,32 @@ button:hover {
     border: none;
     cursor: pointer;
     font-size: 16px;
+}
+
+/*
+    Pop-ups
+*/
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+}
+.modal-content {
+    background-color: #202138;
+    margin: 15% auto;
+    padding: 20px;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid black;
+}
+.close{
+    float: right;
+    font-size: 20px;
+    cursor: pointer;
 }
