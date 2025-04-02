@@ -95,3 +95,39 @@ button:hover {
     font-size: 20px;
     cursor: pointer;
 }
+.row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  
+  .options-menu {
+    display: none;
+    position: absolute;
+    background-color: #534568;
+    color: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    width: 150px;
+    padding: 10px;
+    z-index: 100;
+  }
+  
+  .options-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .options-menu li {
+    padding: 8px;
+    cursor: pointer;
+  }
+  
+  .options-menu li:hover {
+    background-color: #4a4a70;
+  }
+  
