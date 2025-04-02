@@ -9,7 +9,7 @@ const CardModel = require('../models/cards_model');  // Import the card model
 router.get("/getPartialCardData", async (req, res) => {
     try {
         console.log("Connecting to the database...");
-        await mongoose.connect('mongodb+srv://LotusAdmin:240amasS@lotusledger.swfam.mongodb.net/');
+        await mongoose.connect('mongodb+srv://LotusAdmin:Password123@lotusledger.swfam.mongodb.net/');
         console.log("Database connected successfully");
 
         const cards = await CardModel.find({}, "art name quantity set"); // Select only needed fields
