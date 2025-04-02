@@ -161,7 +161,7 @@ export function hideHoverImage() {
 }
 
 export function attachHoverEffectToArtCells() {
-    const tableBody = document.getElementById("cardTableBody");
+    const tableBody = document.getElementById("displayTableBody");
     tableBody.querySelectorAll("tr").forEach(row => {
         const artCell = row.cells[6]; // Assuming "Art" is in column index 6
         const cardName = row.cells[1]?.textContent || ''; // Assuming "Name" is in column index 1
