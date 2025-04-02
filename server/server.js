@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 app.use(cors());
 app.use(express.json()); 
 
-mongoose.connect('mongodb+srv://LotusAdmin:240amasS@lotusledger.swfam.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect('mongodb+srv://LotusAdmin:Password123@lotusledger.swfam.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
         console.log("MongoDB connected successfully");
     })
