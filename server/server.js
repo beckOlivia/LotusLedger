@@ -1,36 +1,52 @@
 const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');  
 const cors = require('cors');
-const mongoose = require('mongoose');
-app.use(cors());
-app.use(express.json()); 
+require('dotenv').config();
 
-mongoose.connect('mongodb+srv://LotusAdmin:Password123@lotusledger.swfam.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        console.log("MongoDB connected successfully");
-    })
-    .catch(err => {
-        console.error("Error connecting to MongoDB", err);
-    });
+const { ObjectId } = require('mongodb');
+const { connectDB } = require('./db');
+const {
+    saveCardToDatabase,
+    getCardFromDatabase
+} = require('./controllers/saveCardController');
+const {
+    saveStorageToDatabase,
+    getStorageFromDatabase,
+    addCardToStorage
+} = require('./controllers/storageController');
 
-const { saveCardToDatabase, getCardFromDatabase } = require('./controllers/saveCardController'); // Ensure correct import
-const { saveStorageToDatabase, getStorageFromDatabase, addCardToStorage } = require('./controllers/storageController');
-const CardModel = require('./models/cards_model');  // Adjust path as necessary
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-const cardRoutes = require("./routes/cards");
+app.use(cors({
+    origin: 'http://127.0.0.1:5500',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type']
+}));
+
+app.use(express.json());
+app.use(cors({
+    origin: 'http://127.0.0.1:5500',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type']
+}));
+
+const cardRoutes = require('./routes/cards');
 app.use('/api/cards', cardRoutes);
-
-app.use(bodyParser.json());
-
-
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 // Route to save cards to the database
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    next();
+});
 app.post('/saveCards', async (req, res) => {
     try {
-        const savedCards = await saveCardToDatabase(req.body);
+        const result = await saveCardToDatabase(req.body);
+
         res.json({
             message: 'Card(s) saved successfully',
-            result: savedCards  // Return the saved cards
+            success: true,
+            insertedIds: result.insertedIds
         });
     } catch (error) {
         console.error('Error saving cards:', error);
@@ -38,12 +54,12 @@ app.post('/saveCards', async (req, res) => {
     }
 });
 
+// Route to clear all cards
 app.delete('/clearCards', async (req, res) => {
     try {
-        const db = await connectMongo();  // Connect to the database
-        const cardsCollection = db.collection('Cards');  // Get the Cards collection
+        const db = await connectDB();
+        const cardsCollection = db.collection('Cards');
 
-        // Delete all documents in the Cards collection
         const result = await cardsCollection.deleteMany({});
 
         if (result.deletedCount > 0) {
@@ -57,45 +73,34 @@ app.delete('/clearCards', async (req, res) => {
     }
 });
 
-// Route to get cards from the database
+// Route to get all cards
 app.get('/getCards', async (req, res) => {
     try {
-        console.log("Fetching cards from database...");
+        console.log('Fetching cards from database...');
         const cards = await getCardFromDatabase();
-        console.log("Fetched cards:", cards);
+        console.log('Fetched cards:', cards);
+
         res.status(200).json({ data: { cards } });
     } catch (error) {
-        console.error("Error fetching cards:", error);
+        console.error('Error fetching cards:', error);
         res.status(500).json({ error: 'Error fetching cards', details: error.message });
     }
 });
 
-
-// Example route to export cards to CSV (this would trigger the export function)
-app.get('/exportCards', async (req, res) => {
-    try {
-        await exportCardsToCSV();
-        res.status(200).send('Export successful');
-    } catch (error) {
-        res.status(500).send('Error exporting cards: ' + error.message);
-    }
-});
-
-// Start the server
-const port = 3000;
-app.listen(port, () => {
-    console.log(`Server is running on http://localhost:${port}`);
-});
-// Assuming you're using Express.js
+// Route to get cards by IDs
 app.post('/getCardsByIds', async (req, res) => {
     try {
         const { ids } = req.body;
+
         if (!ids || !Array.isArray(ids)) {
             return res.status(400).json({ error: 'Invalid IDs array' });
         }
 
-        // Fetch cards from the database using the provided IDs
-        const cards = await Card.find({ '_id': { $in: ids } });
+        const db = await connectDB();
+        const cardsCollection = db.collection('Cards');
+
+        const objectIds = ids.map(id => new ObjectId(id));
+        const cards = await cardsCollection.find({ _id: { $in: objectIds } }).toArray();
 
         if (cards.length > 0) {
             res.json(cards);
@@ -108,16 +113,16 @@ app.post('/getCardsByIds', async (req, res) => {
     }
 });
 
+// Route to save storage
 app.post('/saveStorage', async (req, res) => {
     try {
         const { storageData } = req.body;
-        console.log("Received storage data:", storageData);  // Log received data for debugging
-        
+        console.log('Received storage data:', storageData);
+
         if (!storageData || !Array.isArray(storageData) || storageData.length === 0) {
-            throw new Error("Invalid storage data: Data must be a non-empty array");
+            throw new Error('Invalid storage data: Data must be a non-empty array');
         }
 
-        // Validate each storage entry
         storageData.forEach(entry => {
             if (!entry.name || !entry.capacity || !entry.location) {
                 throw new Error("Invalid storage entry: 'name', 'capacity', and 'location' are required");
@@ -125,20 +130,20 @@ app.post('/saveStorage', async (req, res) => {
         });
 
         const savedStorage = await saveStorageToDatabase(storageData);
+
         res.status(200).json({
             message: 'Storage entries saved successfully',
             result: savedStorage
         });
-        
     } catch (err) {
         console.error('Error saving storage:', err);
         res.status(500).json({ error: 'Server error while saving storage.', details: err.message });
     }
 });
 
+// Route to get storage
 app.get('/getStorage', async (req, res) => {
     try {
-        // Fetch the storage entries from the database or in-memory storage
         const storageEntries = await getStorageFromDatabase();
         res.status(200).json({ result: storageEntries });
     } catch (error) {
@@ -146,16 +151,51 @@ app.get('/getStorage', async (req, res) => {
         res.status(500).json({ error: 'Server error while fetching storage entries.' });
     }
 });
-app.get("/getPartialCardData", async (req, res) => {
+
+app.get('/cardData', async (req, res) => {
     try {
-        const cards = await CardModel.find({}, "quantity name set art");
-        res.json({ result: cards }); // Return data under 'result' key
+        const { name } = req.query;
+
+        if (!name) {
+            return res.status(400).json({ error: 'Card name is required' });
+        }
+
+        const response = await fetch(
+            `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(name)}`
+        );
+
+        if (!response.ok) {
+            return res.status(response.status).json({
+                error: 'Failed to fetch from Scryfall'
+            });
+        }
+
+        const data = await response.json();
+        res.json(data);
     } catch (error) {
-        console.error("Error fetching card data:", error);
-        res.status(500).json({ error: "Failed to fetch card data" });
+        console.error('Error fetching Scryfall data:', error);
+        res.status(500).json({ error: 'Server error fetching card data' });
     }
 });
 
+// Route to get partial card data
+app.get('/getPartialCardData', async (req, res) => {
+    try {
+        const db = await connectDB();
+        const cardsCollection = db.collection('Cards');
+
+        const cards = await cardsCollection
+            .find({}, { projection: { quantity: 1, name: 1, set: 1, art: 1 } })
+            .toArray();
+
+        res.json({ result: cards });
+    } catch (error) {
+        console.error('Error fetching card data:', error);
+        res.status(500).json({ error: 'Failed to fetch card data' });
+    }
+});
+
+// Route to update card storage
 app.put('/updateCardStorage', async (req, res) => {
     const { cardId, storageLocation } = req.body;
 
@@ -165,25 +205,24 @@ app.put('/updateCardStorage', async (req, res) => {
 
     try {
         console.log('Updating card storage:', { cardId, storageLocation });
-        
-        // Call the addCardToStorage function with proper data
-        // Update the storageData object to match the expected format in addCardToStorage function
-        const storageData = { location: storageLocation };  // Adjusting storage format to match expected argument
+
+        const storageData = { location: storageLocation };
         const updatedCard = await addCardToStorage(storageData, { _id: cardId });
-        
-        return res.status(200).json(updatedCard);  // Return the updated card to the client
+
+        return res.status(200).json(updatedCard);
     } catch (error) {
-        console.error('Error updating card storage:', error.message);  // Log the exact error message
+        console.error('Error updating card storage:', error.message);
         return res.status(500).json({ message: 'Error updating card storage', error: error.message });
     }
 });
 
 
-
-
-app.use(cors({
-    origin: 'http://127.0.0.1:5500', // Allow frontend requests
-    methods: ['GET', 'POST', 'DELETE'], // Allow necessary HTTP methods
-    allowedHeaders: ['Content-Type'] // Allow necessary headers
-}));
-
+connectDB()
+    .then(() => {
+        app.listen(PORT, () => {
+            console.log(`Server running on http://localhost:${PORT}`);
+        });
+    })
+    .catch(err => {
+        console.error('Failed to connect to MongoDB', err);
+    });

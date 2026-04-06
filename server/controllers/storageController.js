@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb')
-const uri = "mongodb+srv://LotusAdmin:Password123@lotusledger.swfam.mongodb.net/";
+const uri = process.env.MONGO_URI;
 const dbName = 'LotusLedger';
 const collectionName = 'Storage';
 const { ObjectId } = require('mongodb'); 
