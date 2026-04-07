@@ -7,41 +7,104 @@ hoverImage.style.maxWidth = "200px";
 hoverImage.style.zIndex = "1000";
 document.body.appendChild(hoverImage);
 
-export function getCardType(cardName, row) {
-    let apiUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`;
+// -----------------------
+// CACHE
+// -----------------------
+const cardCache = new Map();
+let symbologyCache = null;
+let symbologyPromise = null;
 
-    fetch(apiUrl)
+// -----------------------
+// SHARED FETCH HELPERS
+// -----------------------
+export async function fetchCardData(cardName) {
+    const key = String(cardName || "").trim().toLowerCase();
+
+    if (!key) return null;
+
+    if (cardCache.has(key)) {
+        return cardCache.get(key);
+    }
+
+    try {
+        const apiUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`;
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        if (data.object === "card") {
+            cardCache.set(key, data);
+            return data;
+        }
+
+        return null;
+    } catch (error) {
+        console.error(`Error fetching card data for ${cardName}:`, error);
+        return null;
+    }
+}
+
+async function fetchSymbology() {
+    if (symbologyCache) {
+        return symbologyCache;
+    }
+
+    if (symbologyPromise) {
+        return symbologyPromise;
+    }
+
+    symbologyPromise = fetch(`https://api.scryfall.com/symbology`)
         .then(response => response.json())
         .then(data => {
-            if (data.object === "card") {
-                let cardType = data.type_line || "Unknown Type";
-
-                // Find the correct column for Type (assuming it's column index 2)
-                let typeCell = row.cells[2];
-                if (typeCell) {
-                    typeCell.textContent = cardType; // Update the table
-                }
-            }
+            symbologyCache = data;
+            return data;
         })
         .catch(error => {
-            console.error(`Error fetching card type for ${cardName}:`, error);
+            console.error("Error fetching symbology:", error);
+            return null;
+        })
+        .finally(() => {
+            symbologyPromise = null;
         });
+
+    return symbologyPromise;
+}
+
+// Optional: preload a batch of cards for current page
+export async function preloadCards(cardNames = []) {
+    const uniqueNames = [...new Set(cardNames.filter(Boolean))];
+    await Promise.all(uniqueNames.map(name => fetchCardData(name)));
+}
+
+// -----------------------
+// EXISTING FEATURES
+// -----------------------
+export async function getCardType(cardName, row) {
+    const data = await fetchCardData(cardName);
+
+    if (!data) return;
+
+    const cardType = data.type_line || "Unknown Type";
+    const typeCell = row.cells[2];
+
+    if (typeCell) {
+        typeCell.textContent = cardType;
+    }
 }
 
 export function calculateTotalMana(manaCost) {
     if (!manaCost || manaCost === "N/A") return 0;
 
     let total = 0;
-    const matches = manaCost.match(/\{([^}]+)\}/g); // Match all {X} symbols
+    const matches = manaCost.match(/\{([^}]+)\}/g);
 
     if (matches) {
         matches.forEach(match => {
-            let value = match.replace(/\{|\}/g, ""); // Remove {}
+            const value = match.replace(/\{|\}/g, "");
 
             if (!isNaN(value)) {
-                total += parseInt(value); // Add generic mana
+                total += parseInt(value, 10);
             } else if (value !== "X") {
-                total += 1; // Add 1 for each specific colored mana
+                total += 1;
             }
         });
     }
@@ -49,111 +112,78 @@ export function calculateTotalMana(manaCost) {
     return total;
 }
 
-export function getManaColors(cardName, row) {
-    let apiUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`;
+export async function getManaColors(cardName, row) {
+    const data = await fetchCardData(cardName);
+    if (!data) return;
 
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.object === "card") {
-                let manaCost = data.mana_cost || ""; // Raw mana cost string
-                let typeCell = row.cells[4]; // Ensure row is passed in as an argument
+    const manaCost = data.mana_cost || "";
+    const typeCell = row.cells[4];
 
-                if (typeCell) {
-                    typeCell.innerHTML = ""; // Clear previous content
+    if (!typeCell) return;
 
-                    // Fetch symbology once
-                    fetch(`https://api.scryfall.com/symbology`)
-                        .then(response => response.json())
-                        .then(symbolData => {
-                            let symbols = extractSymbols(manaCost);
-                            symbols.forEach(symbol => {
-                                makeSymbol(symbol, symbolData, typeCell);
-                            });
-                        })
-                        .catch(error => console.error("Error fetching symbology:", error));
-                }
-            }
-        })
-        .catch(error => {
-            console.error(`Error fetching card data for ${cardName}:`, error);
-        });
+    typeCell.innerHTML = "";
+
+    const symbolData = await fetchSymbology();
+    if (!symbolData?.data) return;
+
+    const symbols = extractSymbols(manaCost);
+    symbols.forEach(symbol => {
+        makeSymbol(symbol, symbolData, typeCell);
+    });
 }
 
-// Extracts individual symbols (e.g., ["3", "W", "U"]) from a mana cost string
-function extractSymbols(manaCost) {
-    let matches = manaCost.match(/\{([^}]+)\}/g) || []; // Find all `{X}` patterns
-    return matches.map(match => match.replace(/[{}]/g, "")); // Remove `{}` brackets
+export function extractSymbols(manaCost) {
+    const matches = manaCost.match(/\{([^}]+)\}/g) || [];
+    return matches.map(match => match.replace(/[{}]/g, ""));
 }
 
-// Helper function to append symbol images
 function makeSymbol(symbol, symbolData, typeCell) {
-    let foundSymbol = symbolData.data.find(s => s.symbol === `{${symbol}}`);
+    const foundSymbol = symbolData.data.find(s => s.symbol === `{${symbol}}`);
+    const imageUrl = foundSymbol
+        ? foundSymbol.svg_uri
+        : `https://c2.scryfall.com/file/scryfall-symbols/card-symbols/${symbol}.svg`;
 
-    // If symbol is a number, use its direct URL
-    let imageUrl = foundSymbol ? foundSymbol.svg_uri : `https://c2.scryfall.com/file/scryfall-symbols/card-symbols/${symbol}.svg`;
-
-    let img = document.createElement("img");
+    const img = document.createElement("img");
     img.src = imageUrl;
     img.alt = symbol;
-    img.style.width = "20px"; // Adjust size as needed
+    img.style.width = "20px";
     img.style.marginRight = "5px";
     typeCell.appendChild(img);
 }
 
+export async function getCardCost(cardName, row) {
+    const data = await fetchCardData(cardName);
+    if (!data) return;
 
-export function getCardCost(cardName, row) {
-    let apiUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}`;
+    const cardCost = data.mana_cost || "";
+    const totalMana = calculateTotalMana(cardCost);
+    const typeCell = row.cells[3];
 
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.object === "card") {
-                let cardCost = data.mana_cost || " ";
-                let totalMana = calculateTotalMana(cardCost);
-
-                // Find the correct column for Type (assuming it's column index 2)
-                let typeCell = row.cells[3];
-                if (typeCell) {
-                    typeCell.textContent = totalMana; // Update the table
-                }
-            }
-        })
-        .catch(error => {
-            console.error(`Error fetching card type for ${cardName}:`, error);
-        });
+    if (typeCell) {
+        typeCell.textContent = totalMana;
+    }
 }
 
-export function showHoverImage(event, cardName, setName, artType) {
-    let foilStatus = "";
-    let promoStatus = "";
-    if (artType.toLowerCase().includes("foil")) {
-        foilStatus = "yes";
-    }
-    if (artType.toLowerCase().includes("promo")) {
-        promoStatus = "true";
-    }
-    let apiUrl = `https://api.scryfall.com/cards/named?fuzzy=${encodeURIComponent(cardName)}&set=${encodeURIComponent(setName)}`;
-    
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(data => {
-            if (data.image_uris?.normal) {
-                hoverImage.src = data.image_uris.normal;
-            } else if (data.card_faces?.[0]?.image_uris?.normal) {
-                hoverImage.src = data.card_faces[0].image_uris.normal; // Handle double-faced cards
-            } else {
-                hoverImage.style.display = "none";
-                return;
-            }
+export async function showHoverImage(event, cardName, setName, artType) {
+    const data = await fetchCardData(cardName);
 
-            hoverImage.style.display = "block";
-            hoverImage.style.top = `${event.pageY + 10}px`;
-            hoverImage.style.left = `${event.pageX + 10}px`;
-        })
-        .catch(() => {
-            hoverImage.style.display = "none";
-        });
+    if (!data) {
+        hoverImage.style.display = "none";
+        return;
+    }
+
+    if (data.image_uris?.normal) {
+        hoverImage.src = data.image_uris.normal;
+    } else if (data.card_faces?.[0]?.image_uris?.normal) {
+        hoverImage.src = data.card_faces[0].image_uris.normal;
+    } else {
+        hoverImage.style.display = "https://static.vecteezy.com/system/resources/previews/065/319/368/non_2x/team-management-failure-with-error-or-process-slowdown-vector.jpg";
+        return;
+    }
+
+    hoverImage.style.display = "block";
+    hoverImage.style.top = `${event.pageY + 10}px`;
+    hoverImage.style.left = `${event.pageX + 10}px`;
 }
 
 export function hideHoverImage() {
@@ -163,13 +193,15 @@ export function hideHoverImage() {
 export function attachHoverEffectToArtCells() {
     const tableBody = document.getElementById("displayTableBody");
     tableBody.querySelectorAll("tr").forEach(row => {
-        const artCell = row.cells[6]; // Assuming "Art" is in column index 6
-        const cardName = row.cells[1]?.textContent || ''; // Assuming "Name" is in column index 1
-        const setName = row.cells[5]?.textContent || ''; // Assuming "Set" is in column index 5
-        const artType = row.cells[6]?.textContent || ''; // Assuming "Art" is in column index 6
+        const artCell = row.cells[6];
+        const cardName = row.cells[1]?.textContent || "";
+        const setName = row.cells[5]?.textContent || "";
+        const artType = row.cells[6]?.textContent || "";
 
         if (artCell) {
-            artCell.addEventListener("mouseenter", (event) => showHoverImage(event, cardName, setName, artType));
+            artCell.addEventListener("mouseenter", (event) =>
+                showHoverImage(event, cardName, setName, artType)
+            );
             artCell.addEventListener("mouseleave", hideHoverImage);
         }
     });

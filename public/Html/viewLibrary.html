@@ -1,44 +1,250 @@
 <!DOCTYPE html>
-<link rel="stylesheet" href="../Css/theme.css">
-<link rel="stylesheet" href="../Css/viewStuff.css">
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Library</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script type="module" src="../JavaScript/addCards.js"></script>
-<script type="module" src="../JavaScript/getCardData.js"></script>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Library</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-        <div class="TopPage">
-            <textarea id="txtSearchLibrary">Search Library</textarea>
-            <button id="btnAdvanceSearch">Advanced Search</button>
-            <button id="btnAddCards">Add Cards</button>
-            <button id="btnExportCards">Export Cards</button>
-            <button id="btnSettings">Settings</button>
+    <link rel="stylesheet" href="../Css/theme.css">
+    <link rel="stylesheet" href="../Css/viewStuff.css">
+
+    <script type="module" src="../JavaScript/addCards.js"></script>
+    <script type="module" src="../JavaScript/getCardData.js"></script>
+</head>
+<body>
+    <div class="TopPage">
+        <input type="text" id="txtSearchLibrary" placeholder="Search Library...">
+        <button id="btnAdvanceSearch" type="button">Advanced Search</button>
+        <button id="btnAddCards" type="button">Add Cards</button>
+        <button id="btnExportCards" type="button">Export Cards</button>
+
+        <div class="settings-wrapper">
+            <button id="btnSettings" type="button">Settings</button>
+            <div id="settingsMenu" class="settings-menu">
+                <button id="btnToggleView" type="button">Switch to Image View</button>
+                <button id="btnToggleDetailsPanel" type="button">Open Details Panel</button>
+            </div>
         </div>
+    </div>
+
+    <div id="listViewContainer">
         <table class="display-table">
             <thead>
                 <tr>
-                    <th>Quantity</th>
-                    <th>Card Name</th>
-                    <th>Type</th>
-                    <th>Cost</th>
-                    <th>Colors</th>
-                    <th>Set</th>
-                    <th>Art</th>
-                    <th>Storage</th>
-                    <th>Last Updated</th>
-                    <th></th>
+                    <th class="sortable" data-column="quantity">Quantity <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="name">Name <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="type">Type <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="cost">Cost <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="colors">Colors <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="set">Set <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="art">Art <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="storage">Storage <span class="sort-icon"></span></th>
+                    <th class="sortable" data-column="lastUpdated">Last Updated <span class="sort-icon"></span></th>
+                    <th>Options</th>
                 </tr>
             </thead>
-            <tbody id="displayTableBody">
-                <!-- Card rows will be added here -->
-            </tbody>
+            <tbody id="displayTableBody"></tbody>
         </table>
-    </body>
+    </div>
+
+    <div id="imageViewContainer" class="image-view hidden"></div>
+
+    <div class="pagination-controls">
+        <button id="btnPrevPage" type="button">Previous</button>
+        <span id="pageInfo">Page 1 of 1</span>
+        <button id="btnNextPage" type="button">Next</button>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" id="closeEditModal">&times;</span>
+            <h3>Edit Card</h3>
+
+            <label for="editQuantity">Quantity</label>
+            <input type="number" id="editQuantity" min="1">
+
+            <label for="editStorage">Storage</label>
+            <input type="text" id="editStorage">
+
+            <label for="editArt">Art</label>
+            <input type="text" id="editArt">
+
+            <button id="saveEditButton" type="button">Save Changes</button>
+        </div>
+    </div>
+
+    <!-- Storage Modal -->
+    <div id="storageModal" class="modal">
+        <div class="modal-content">
+            <h3>Add to Storage</h3>
+
+            <label for="storageNameInput">Storage Name</label>
+            <input id="storageNameInput" type="text" />
+
+            <label for="storageQuantityInput">Quantity to Move</label>
+            <input id="storageQuantityInput" type="number" min="1" value="1" />
+
+            <p id="storageCurrentQuantity"></p>
+
+            <div class="modal-buttons">
+            <button id="btnSaveStorage" type="button">Save</button>
+            <button id="btnCancelStorage" type="button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Advanced Search Modal -->
+    <div id="advancedSearchModal" class="modal">
+        <div class="modal-content advanced-search-modal">
+            <span class="close" id="closeAdvancedSearchModal">&times;</span>
+            <h2>Advanced Search</h2>
+
+            <label>Card Name</label>
+            <input type="text" id="advCardName" placeholder='Any words in the name, e.g. "Fire"'>
+
+            <label>Text</label>
+            <input type="text" id="advText" placeholder='Any text, e.g. "draw a card"'>
+
+            <label>Type Line</label>
+            <input type="text" id="advTypeLine" placeholder="Creature, Instant, Elf, Legendary...">
+            <label class="checkbox-row">
+                <input type="checkbox" id="advAllowPartialType">
+                Allow partial type matches
+            </label>
+
+            <label>Colors</label>
+            <div class="mana-color-group">
+                <label><input type="checkbox" value="W" class="advColor"> W</label>
+                <label><input type="checkbox" value="U" class="advColor"> U</label>
+                <label><input type="checkbox" value="B" class="advColor"> B</label>
+                <label><input type="checkbox" value="R" class="advColor"> R</label>
+                <label><input type="checkbox" value="G" class="advColor"> G</label>
+                <label><input type="checkbox" value="C" class="advColor"> C</label>
+            </div>
+
+            <label>Color Comparison</label>
+            <select id="advColorComparison">
+                <option value="">Any</option>
+                <option value="exactly">Exactly these colors</option>
+                <option value="including">Including</option>
+                <option value="atMost">At most</option>
+            </select>
+
+            <label>Mana Cost</label>
+            <input type="text" id="advManaCost" placeholder='e.g. "{W}{W}"'>
+
+            <label>Mana Value</label>
+            <div class="stat-row">
+                <select id="advManaValueComparison">
+                    <option value="">Any</option>
+                    <option value="eq">equal to</option>
+                    <option value="lt">less than</option>
+                    <option value="lte">less than or equal</option>
+                    <option value="gt">greater than</option>
+                    <option value="gte">greater than or equal</option>
+                </select>
+                <input type="number" id="advManaValue" placeholder="e.g. 2">
+            </div>
+
+            <label>Set</label>
+            <input type="text" id="advSet" placeholder="Enter set name or code">
+
+            <label>Rarity</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" value="common" class="advRarity"> Common</label>
+                <label><input type="checkbox" value="uncommon" class="advRarity"> Uncommon</label>
+                <label><input type="checkbox" value="rare" class="advRarity"> Rare</label>
+                <label><input type="checkbox" value="mythic" class="advRarity"> Mythic Rare</label>
+            </div>
+
+            <label>Artist</label>
+            <input type="text" id="advArtist" placeholder='Any artist name, e.g. "Magali"'>
+
+            <label>Flavor Text</label>
+            <input type="text" id="advFlavorText" placeholder='Any flavor text, e.g. "Kjeldoran"'>
+
+            <label>Lore Finder</label>
+            <input type="text" id="advLoreFinder" placeholder='Any text, e.g. "Jhoira"'>
+
+            <label>Storage</label>
+            <input type="text" id="advStorage" placeholder="Binder, Box, Deck...">
+
+            <label>Language</label>
+            <input type="text" id="advLanguage" placeholder="Default, English, Japanese...">
+
+            <label>Sort By</label>
+            <select id="advSortBy">
+                <option value="name">Name</option>
+                <option value="set">Set</option>
+                <option value="manaValue">Mana Value</option>
+                <option value="lastUpdated">Last Updated</option>
+                <option value="quantity">Quantity</option>
+            </select>
+
+            <label>Display</label>
+            <select id="advDisplay">
+                <option value="">Keep current</option>
+                <option value="list">Display as List</option>
+                <option value="image">Display as Images</option>
+            </select>
+
+            <div class="advanced-search-actions">
+                <button id="btnApplyAdvancedSearch" type="button">Apply Filters</button>
+                <button id="btnClearAdvancedSearch" type="button">Clear Filters</button>
+            </div>
+        </div>
+    </div>
+    <div id="imageZoomModal" class="image-zoom-modal hidden">
+        <span id="closeImageZoomModal" class="image-zoom-close">&times;</span>
+        <img id="zoomedCardImage" class="image-zoom-content" alt="Zoomed card image">
+    </div>
+    <aside id="detailsPanel" class="details-panel hidden">
+        <div class="details-panel-header">
+            <h3>Collection Details</h3>
+            <button id="btnCloseDetailsPanel" type="button" class="details-panel-close">&times;</button>
+        </div>
+
+        <div id="detailsPanelContent" class="details-panel-content">
+            <div class="details-empty">No data available.</div>
+        </div>
+    </aside>
+    <!-- Add Cards Choice Modal -->
+    <div id="addCardsChoiceModal" class="modal">
+        <div class="modal-content" style="max-width: 420px;">
+            <span class="close" id="closeAddCardsChoiceModal">&times;</span>
+            <h3>Add Cards</h3>
+            <p>Choose how you want to add cards.</p>
+
+            <div class="modal-buttons" style="justify-content: stretch; flex-direction: column;">
+                <button id="btnAddCardsByFile" type="button">Upload File</button>
+                <button id="btnAddCardsByText" type="button">Enter Card Name</button>
+            </div>
+        </div>
+    </div>
+
+        <!-- Manual Add Modal -->
+    <div id="manualAddModal" class="modal">
+        <div class="modal-content" style="max-width: 760px;">
+            <span class="close" id="closeManualAddModal">&times;</span>
+            <h3>Add Card by Name</h3>
+
+            <label for="manualCardNameInput">Card Name</label>
+            <input type="text" id="manualCardNameInput" placeholder="Enter a card name">
+
+            <label for="manualQuantityInput">Quantity</label>
+            <input type="number" id="manualQuantityInput" min="1" value="1">
+
+            <label for="manualStorageInput">Storage</label>
+            <input type="text" id="manualStorageInput" placeholder="Optional">
+
+            <div class="modal-buttons">
+                <button id="btnManualSearchCard" type="button">Search</button>
+                <button id="btnManualClearSearch" type="button">Clear</button>
+            </div>
+            <div id="manualCardSearchResults" style="margin-top: 18px;"></div>
+        </div>
+    </div>
+</body>
 </html>
