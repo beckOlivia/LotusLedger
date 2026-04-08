@@ -1,0 +1,107 @@
+/* =========================
+   Site Header
+========================= */
+.site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    padding: 18px 24px;
+    background:
+        linear-gradient(180deg, rgba(83, 69, 104, 0.55) 0%, rgba(43, 45, 74, 0.96) 100%);
+    border-bottom: 1px solid var(--border-main);
+    box-shadow: var(--shadow-soft);
+}
+
+/* LEFT SIDE */
+.site-header__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.site-header__logo {
+    font-size: 1.35rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-main);
+    position: relative;
+}
+
+/* subtle underline accent */
+.site-header__logo::after {
+    content: "";
+    display: block;
+    width: 70%;
+    height: 2px;
+    margin-top: 4px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.8), transparent);
+    border-radius: 999px;
+}
+
+/* PAGE LABEL */
+.site-header__page-info {
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+/* NAV */
+.site-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.site-header__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    height: 38px;
+    padding: 0 16px;
+
+    border-radius: var(--radius-sm);
+    border: 1px solid transparent;
+
+    color: var(--text-muted);
+    background: transparent;
+
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+
+    transition:
+        background-color var(--transition-fast),
+        border-color var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.site-header__link:hover {
+    background-color: var(--bg-soft);
+    border-color: var(--border-main);
+    color: var(--text-main);
+}
+
+/* ACTIVE TAB */
+.site-header__link--active {
+    background-color: var(--bg-accent);
+    border-color: var(--border-main);
+    color: var(--text-main);
+}
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+    .site-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .site-header__nav {
+        width: 100%;
+        flex-wrap: wrap;
+    }
+}
