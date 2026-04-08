@@ -1,0 +1,249 @@
+/* =========================
+   Shared Modal
+========================= */
+.modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1600;
+    background-color: rgba(0, 0, 0, 0.62);
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.modal-content {
+    position: relative;
+    width: min(92vw, 640px);
+    margin: 40px auto;
+    padding: 22px;
+    border-radius: 14px;
+    background-color: #202138;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.32);
+    color: white;
+}
+
+.modal-content h2,
+.modal-content h3 {
+    margin-top: 0;
+    margin-bottom: 16px;
+}
+
+.modal-content label {
+    display: block;
+    margin: 12px 0 6px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: white;
+}
+
+.modal-content input,
+.modal-content select,
+.modal-content textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #43466a;
+    border-radius: 8px;
+    background-color: #2b2d4a;
+    color: white;
+    outline: none;
+    font-size: 0.95rem;
+}
+
+.modal-content input::placeholder,
+.modal-content textarea::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.modal-content textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.close {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    color: white;
+    font-size: 28px;
+    font-weight: 700;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.close:hover {
+    opacity: 0.8;
+}
+
+.modal-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.modal-buttons button {
+    min-width: 120px;
+}
+
+/* =========================
+   Add Cards Manual Search
+========================= */
+.manual-search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.manual-search-card {
+    border: 1px solid #3b3d5c;
+    border-radius: 10px;
+    padding: 14px;
+    background-color: #2a2c46;
+}
+
+.manual-search-card h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+}
+
+.manual-search-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 8px 14px;
+    margin-bottom: 12px;
+    font-size: 0.92rem;
+}
+
+.manual-search-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+.manual-search-actions label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: 500;
+}
+
+.manual-search-actions input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.manual-search-actions input[type="text"] {
+    min-width: 160px;
+    margin: 0;
+}
+
+.manual-search-empty {
+    color: rgba(255, 255, 255, 0.78);
+    padding: 12px 0;
+}
+
+/* =========================
+   Edit / Storage Helpers
+========================= */
+#storageCurrentQuantity {
+    margin-top: 10px;
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.stat-row {
+    display: grid;
+    grid-template-columns: minmax(140px, 180px) 1fr;
+    gap: 10px;
+    align-items: center;
+}
+
+.checkbox-row {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.checkbox-row input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.mana-color-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+}
+
+.mana-color-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    font-weight: 500;
+}
+
+.mana-color-group input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+}
+
+.advanced-search-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 700px) {
+    .modal {
+        padding: 14px;
+    }
+
+    .modal-content {
+        width: 100%;
+        margin: 18px auto;
+        padding: 18px;
+    }
+
+    .modal-buttons,
+    .advanced-search-actions {
+        flex-direction: column;
+    }
+
+    .modal-buttons button,
+    .advanced-search-actions button {
+        width: 100%;
+    }
+
+    .manual-search-meta,
+    .stat-row {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-content.small {
+        max-width: 420px;
+    }
+
+    .modal-content.large {
+        max-width: 760px;
+    }
+
+    .modal-buttons-stack {
+        justify-content: stretch;
+        flex-direction: column;
+    }
+
+    .manual-search-results-wrap {
+        margin-top: 18px;
+    }
+}

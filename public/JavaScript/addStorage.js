@@ -92,7 +92,7 @@ document.addEventListener("DOMContentLoaded", function () {
     
         if (storageLocation) {
             try {
-                const response = await fetch('http://localhost:3000/updateCardStorage', {
+                const response = await fetch('http://localhost:3000/updateStorage', {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -128,122 +128,43 @@ document.addEventListener("DOMContentLoaded", function () {
     
     
     async function fetchStorage() {
-        try {
-            const response = await fetch('http://localhost:3000/getStorage', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
+    try {
+        const response = await fetch('http://localhost:3000/getStorages');
 
-            if (!response.ok) {
-                throw new Error('Failed to fetch storage entries');
-            }
-
-            const result = await response.json();
-            console.log('Fetched storage entries:', result);
-
-            const tableBody = document.getElementById("displayTableBody");
-            result.result.forEach(entry => {
-                const tr = document.createElement("tr");
-                addCell(tr, entry.name);
-                addCell(tr, entry.capacity);
-                addCell(tr, entry.location);
-                addCell(tr, entry.lastUpdated);
-
-                // Set the storage location as a data attribute on the row
-                tr.dataset.storageLocation = entry.location;
-
-                // Add options button
-                const optionsTd = document.createElement("td");
-                const optionsButton = document.createElement("button");
-                optionsButton.className = "options-button";
-                optionsButton.textContent = "⋮";
-                optionsButton.title = "Options";
-                optionsTd.appendChild(optionsButton);
-                tr.appendChild(optionsTd);
-
-                tableBody.appendChild(tr);
-
-                // Event listener for "three dots" button
-                optionsButton.addEventListener("click", function (event) {
-                    event.stopPropagation(); // Prevent the click from closing the menu immediately
-
-                    // Get the storage location from the row
-                    const storageLocation = tr.dataset.storageLocation;
-
-                    console.log("Storage location selected:", storageLocation);
-
-                    // Show the options menu and handle edit actions
-                    const optionsMenu = createOptionsMenu();
-                    optionsMenu.style.display = 'block'; // Show options menu
-                    document.body.appendChild(optionsMenu);
-
-                    // Handle "Edit Cards" action in options menu
-                    const editCardLink = optionsMenu.querySelector(".edit-card");
-                    if (editCardLink) {
-                        editCardLink.addEventListener("click", async function (event) {
-                            event.preventDefault(); // Prevent default link behavior
-                            openLightbox(); // Open the lightbox to edit cards
-                            
-                            try {
-                                const cards = await fetchPartialCardData(); // Fetch card data
-                                displayPartialCardData(cards); // Display cards in lightbox
-                            } catch (error) {
-                                console.error("Error fetching card data:", error);
-                            }
-                        });
-                    }
-
-                    // Handle "Change Storage Location" action in options menu
-                    const changeStorageLink = optionsMenu.querySelector(".change-storage");
-                    if (changeStorageLink) {
-                        changeStorageLink.addEventListener("click", function (event) {
-                            event.preventDefault(); // Prevent default link behavior
-                            openStorageModal(); // Open the modal for storage selection
-
-                            // Handle saving the updated storage location
-                            document.getElementById("saveStorage").addEventListener("click", async function () {
-                                const newLocation = document.getElementById("storageLocation").value.trim();
-                                if (newLocation) {
-                                    try {
-                                        const response = await fetch('http://localhost:3000/updateCardStorage', {
-                                            method: 'POST',
-                                            headers: {
-                                                'Content-Type': 'application/json',
-                                            },
-                                            body: JSON.stringify({
-                                                cardId: card.id, // assuming the card has an id property
-                                                newStorageLocation: newLocation
-                                            })
-                                        });
-
-                                        if (!response.ok) {
-                                            throw new Error('Failed to update card storage');
-                                        }
-
-                                        // Update the card storage location on the client side
-                                        card.storageLocation = newLocation;
-                                        console.log('Card storage location updated successfully:', card);
-                                    } catch (error) {
-                                        console.error('Error updating card storage:', error);
-                                    }
-                                }
-                            });
-                        });
-                    }
-
-                    window.addEventListener("click", function (event) {
-                        if (!optionsMenu.contains(event.target) && event.target !== optionsButton) {
-                            optionsMenu.style.display = 'none';
-                        }
-                    });
-                });
-            });
-        } catch (error) {
-            console.error('Error fetching storage:', error);
+        if (!response.ok) {
+            throw new Error('Failed to fetch storage entries');
         }
+
+        const result = await response.json();
+        console.log('Fetched storage entries:', result);
+
+        const tableBody = document.getElementById("displayTableBody");
+        tableBody.innerHTML = "";
+
+        (result.data?.storages || []).forEach(entry => {
+            const tr = document.createElement("tr");
+
+            addCell(tr, entry.name);
+            addCell(tr, entry.capacity);
+            addCell(tr, entry.location);
+            addCell(tr, entry.updatedAt ? new Date(entry.updatedAt).toLocaleString() : "");
+
+            tr.dataset.storageLocation = entry.location;
+
+            const optionsTd = document.createElement("td");
+            const optionsButton = document.createElement("button");
+            optionsButton.className = "options-button";
+            optionsButton.textContent = "⋮";
+            optionsTd.appendChild(optionsButton);
+            tr.appendChild(optionsTd);
+
+            tableBody.appendChild(tr);
+        });
+
+    } catch (error) {
+        console.error('Error fetching storage:', error);
     }
+}
 
     // Function to create the options menu with an additional "Change Storage Location" link
     function createOptionsMenu() {
@@ -289,7 +210,51 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("storageModal").style.display = "none";
     }
 
+    async function handleSaveStorage() {
+        const name = document.getElementById("storageName").value.trim();
+        const capacityValue = document.getElementById("storageCapacity").value.trim();
+        const location = document.getElementById("storageLocation").value.trim();
+
+        if (!name) {
+            alert("Please enter a storage name.");
+            return;
+        }
+
+        const payload = {
+            name,
+            capacity: capacityValue ? Number(capacityValue) : 0,
+            location
+        };
+
+        try {
+            const response = await fetch("http://localhost:3000/saveStorage", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (!response.ok || result.success === false) {
+                throw new Error(result.error || "Failed to save storage");
+            }
+
+            closeStorageModal();
+
+            document.getElementById("storageName").value = "";
+            document.getElementById("storageCapacity").value = "";
+            document.getElementById("storageLocation").value = "";
+
+            await fetchStorage();
+        } catch (error) {
+            console.error("Error saving storage:", error);
+            alert(error.message || "Failed to save storage");
+        }
+    }
     // Add event listener to open storage modal
     document.getElementById("btnAddStorage").addEventListener("click", openStorageModal);
     document.getElementById("closeStorageModal").addEventListener("click", closeStorageModal);
+    document.getElementById("saveStorage").addEventListener("click", handleSaveStorage);
 });

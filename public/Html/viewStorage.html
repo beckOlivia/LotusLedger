@@ -1,23 +1,27 @@
 <!DOCTYPE html>
-<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
-<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
-<link rel="stylesheet" href="../Css/theme.css">
-<link rel="stylesheet" href="../Css/viewStuff.css">
-<link rel="stylesheet" href="../Css/popup.css">
-<script src="../JavaScript/addStorage.js"></script>
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Library</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-    </head>
-    <body>
-        <div class="TopPage">
-            <textarea id="txtSearchLibrary">Search Library</textarea>
-            <button id="btnAddStorage">Add Storage</button>
-        </div>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Storage</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="../Css/theme.css">
+    <link rel="stylesheet" href="../Css/viewStuff.css">
+    <link rel="stylesheet" href="../Css/modals.css">
+
+    <script src="../JavaScript/addStorage.js" defer></script>
+</head>
+<body>
+    <div class="TopPage">
+        <input type="text" id="txtSearchLibrary" placeholder="Search Storage...">
+        <button id="btnAddStorage" type="button">Add Storage</button>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+
+    <div id="listViewContainer">
         <table class="display-table">
             <thead>
                 <tr>
@@ -31,47 +35,49 @@
                 <!-- Storage rows will be added here -->
             </tbody>
         </table>
-        <!-- Popup Modal -->
-        <!-- Storage Modal -->
-        <div id="storageModal" class="modal">
-            <div class="modal-content">
-                <span id="closeStorageModal" class="close">&times;</span>
-                <h2>Add Storage</h2>
-                <div>
-                <label>Name:</label>
-                <input type="text" id="storageName" placeholder="Enter storage name">
-            </div>
-                <label>Capacity:</label>
-                <input type="number" id="storageCapacity" placeholder="Enter capacity">
-                <div>
-                <label>Location:</label>
-                <input type="text" id="storageLocation" placeholder="Enter location">
-            </div>
-                <button id="saveStorage">Save</button>
-            </div>
+    </div>
+
+    <!-- Storage Modal -->
+    <div id="storageModal" class="modal">
+        <div class="modal-content">
+            <span id="closeStorageModal" class="close">&times;</span>
+            <h3>Add Storage</h3>
+
+            <label for="storageName">Name</label>
+            <input type="text" id="storageName" placeholder="Enter storage name">
+
+            <label for="storageCapacity">Capacity</label>
+            <input type="number" id="storageCapacity" placeholder="Enter capacity">
+
+            <label for="storageLocation">Location</label>
+            <input type="text" id="storageLocation" placeholder="Enter location">
+
+            <button id="saveStorage" type="button">Save</button>
         </div>
-        <!-- Lightbox Content -->
-        <div id="light" class="white_content" style="display:none;">
-            <table class="display-table">
-                <thead>
-                    <tr>
-                        <th>Quantity</th>
-                        <th>Card Name</th>
-                        <th>Type</th>
-                        <th>Set</th>
-                        <th>Art</th>
-                    </tr>
-                </thead>
-                <tbody id="displayMiniTableBody">
+    </div>
 
-                </tbody>
-            </table>
-            <a href="javascript:void(0)" onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">Close</a>
-        </div>
+    <!-- Lightbox -->
+    <div id="light" class="white_content" style="display:none;">
+        <table class="display-table">
+            <thead>
+                <tr>
+                    <th>Quantity</th>
+                    <th>Card Name</th>
+                    <th>Type</th>
+                    <th>Set</th>
+                    <th>Art</th>
+                </tr>
+            </thead>
+            <tbody id="displayMiniTableBody"></tbody>
+        </table>
 
-        <!-- Black Overlay -->
-        <div id="fade" class="black_overlay" style="display:none;"></div>
+        <a
+            href="javascript:void(0)"
+            onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">
+            Close
+        </a>
+    </div>
 
-        
-    </body>
+    <div id="fade" class="black_overlay" style="display:none;"></div>
+</body>
 </html>

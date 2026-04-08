@@ -8,9 +8,10 @@
 
     <link rel="stylesheet" href="../Css/theme.css">
     <link rel="stylesheet" href="../Css/viewStuff.css">
+    <link rel="stylesheet" href="../Css/modals.css">
+    <link rel="stylesheet" href="../Css/detailsPanel.css">
 
     <script type="module" src="../JavaScript/addCards.js"></script>
-    <script type="module" src="../JavaScript/getCardData.js"></script>
 </head>
 <body>
     <div class="TopPage">
@@ -81,16 +82,18 @@
             <h3>Add to Storage</h3>
 
             <label for="storageNameInput">Storage Name</label>
-            <input id="storageNameInput" type="text" />
+            <select id="storageNameInput">
+                <option value="">Select a storage location</option>
+            </select>
 
             <label for="storageQuantityInput">Quantity to Move</label>
-            <input id="storageQuantityInput" type="number" min="1" value="1" />
+            <input id="storageQuantityInput" type="number" min="1" value="1">
 
             <p id="storageCurrentQuantity"></p>
 
             <div class="modal-buttons">
-            <button id="btnSaveStorage" type="button">Save</button>
-            <button id="btnCancelStorage" type="button">Cancel</button>
+                <button id="btnSaveStorage" type="button">Save</button>
+                <button id="btnCancelStorage" type="button">Cancel</button>
             </div>
         </div>
     </div>
@@ -101,14 +104,15 @@
             <span class="close" id="closeAdvancedSearchModal">&times;</span>
             <h2>Advanced Search</h2>
 
-            <label>Card Name</label>
+            <label for="advCardName">Card Name</label>
             <input type="text" id="advCardName" placeholder='Any words in the name, e.g. "Fire"'>
 
-            <label>Text</label>
+            <label for="advText">Text</label>
             <input type="text" id="advText" placeholder='Any text, e.g. "draw a card"'>
 
-            <label>Type Line</label>
+            <label for="advTypeLine">Type Line</label>
             <input type="text" id="advTypeLine" placeholder="Creature, Instant, Elf, Legendary...">
+
             <label class="checkbox-row">
                 <input type="checkbox" id="advAllowPartialType">
                 Allow partial type matches
@@ -124,7 +128,7 @@
                 <label><input type="checkbox" value="C" class="advColor"> C</label>
             </div>
 
-            <label>Color Comparison</label>
+            <label for="advColorComparison">Color Comparison</label>
             <select id="advColorComparison">
                 <option value="">Any</option>
                 <option value="exactly">Exactly these colors</option>
@@ -132,7 +136,7 @@
                 <option value="atMost">At most</option>
             </select>
 
-            <label>Mana Cost</label>
+            <label for="advManaCost">Mana Cost</label>
             <input type="text" id="advManaCost" placeholder='e.g. "{W}{W}"'>
 
             <label>Mana Value</label>
@@ -148,7 +152,7 @@
                 <input type="number" id="advManaValue" placeholder="e.g. 2">
             </div>
 
-            <label>Set</label>
+            <label for="advSet">Set</label>
             <input type="text" id="advSet" placeholder="Enter set name or code">
 
             <label>Rarity</label>
@@ -159,22 +163,22 @@
                 <label><input type="checkbox" value="mythic" class="advRarity"> Mythic Rare</label>
             </div>
 
-            <label>Artist</label>
+            <label for="advArtist">Artist</label>
             <input type="text" id="advArtist" placeholder='Any artist name, e.g. "Magali"'>
 
-            <label>Flavor Text</label>
+            <label for="advFlavorText">Flavor Text</label>
             <input type="text" id="advFlavorText" placeholder='Any flavor text, e.g. "Kjeldoran"'>
 
-            <label>Lore Finder</label>
+            <label for="advLoreFinder">Lore Finder</label>
             <input type="text" id="advLoreFinder" placeholder='Any text, e.g. "Jhoira"'>
 
-            <label>Storage</label>
+            <label for="advStorage">Storage</label>
             <input type="text" id="advStorage" placeholder="Binder, Box, Deck...">
 
-            <label>Language</label>
+            <label for="advLanguage">Language</label>
             <input type="text" id="advLanguage" placeholder="Default, English, Japanese...">
 
-            <label>Sort By</label>
+            <label for="advSortBy">Sort By</label>
             <select id="advSortBy">
                 <option value="name">Name</option>
                 <option value="set">Set</option>
@@ -183,7 +187,7 @@
                 <option value="quantity">Quantity</option>
             </select>
 
-            <label>Display</label>
+            <label for="advDisplay">Display</label>
             <select id="advDisplay">
                 <option value="">Keep current</option>
                 <option value="list">Display as List</option>
@@ -196,10 +200,14 @@
             </div>
         </div>
     </div>
+
+    <!-- Image Zoom -->
     <div id="imageZoomModal" class="image-zoom-modal hidden">
         <span id="closeImageZoomModal" class="image-zoom-close">&times;</span>
         <img id="zoomedCardImage" class="image-zoom-content" alt="Zoomed card image">
     </div>
+
+    <!-- Details Panel -->
     <aside id="detailsPanel" class="details-panel hidden">
         <div class="details-panel-header">
             <h3>Collection Details</h3>
@@ -210,23 +218,24 @@
             <div class="details-empty">No data available.</div>
         </div>
     </aside>
+
     <!-- Add Cards Choice Modal -->
     <div id="addCardsChoiceModal" class="modal">
-        <div class="modal-content" style="max-width: 420px;">
+        <div class="modal-content small">
             <span class="close" id="closeAddCardsChoiceModal">&times;</span>
             <h3>Add Cards</h3>
             <p>Choose how you want to add cards.</p>
 
-            <div class="modal-buttons" style="justify-content: stretch; flex-direction: column;">
+            <div class="modal-buttons modal-buttons-stack">
                 <button id="btnAddCardsByFile" type="button">Upload File</button>
                 <button id="btnAddCardsByText" type="button">Enter Card Name</button>
             </div>
         </div>
     </div>
 
-        <!-- Manual Add Modal -->
+    <!-- Manual Add Modal -->
     <div id="manualAddModal" class="modal">
-        <div class="modal-content" style="max-width: 760px;">
+        <div class="modal-content large">
             <span class="close" id="closeManualAddModal">&times;</span>
             <h3>Add Card by Name</h3>
 
@@ -243,7 +252,8 @@
                 <button id="btnManualSearchCard" type="button">Search</button>
                 <button id="btnManualClearSearch" type="button">Clear</button>
             </div>
-            <div id="manualCardSearchResults" style="margin-top: 18px;"></div>
+
+            <div id="manualCardSearchResults" class="manual-search-results-wrap"></div>
         </div>
     </div>
 </body>

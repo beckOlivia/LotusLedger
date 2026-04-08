@@ -5,38 +5,140 @@
     font-style: normal;
 }
 
+/* =========================
+   Design Tokens
+========================= */
+:root {
+    --bg-main: #202138;
+    --bg-panel: #2b2d4a;
+    --bg-accent: #534568;
+    --bg-accent-hover: #675584;
+    --bg-soft: rgba(83, 69, 104, 0.34);
+
+    --text-main: #ffffff;
+    --text-muted: rgba(255, 255, 255, 0.72);
+
+    --border-main: #43466a;
+    --shadow-soft: 0 8px 20px rgba(0, 0, 0, 0.28);
+
+    --radius-sm: 8px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+
+    --font-main: "Copperplate Gothic 29 BC", serif;
+    --transition-fast: 0.2s ease;
+}
+
+/* =========================
+   Base Reset
+========================= */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
 body {
-    font-family: "Copperplate Gothic 29 BC", serif;
-    background-color: #202138;
-    color: white;
+    margin: 0;
+    padding: 0;
 }
 
-.TopPage{
-    display: flex;
-    flex-direction: row;
-    align-self: center;
-    justify-content: center;
-    padding-bottom: 20px;
-    height: 60px;
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: var(--font-main);
+    line-height: 1.4;
 }
 
-button, textarea{
-    font-family: "Copperplate Gothic 29 BC", serif;
-    background-color: #534568;
-    color: white;
-    border: 1px solid black;
-    margin: 5px;
-    border-radius: 10px;
+/* =========================
+   Typography
+========================= */
+h1, h2, h3, h4, h5, h6 {
+    margin-top: 0;
+    color: var(--text-main);
+    font-weight: normal;
+}
+
+p {
+    margin-top: 0;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+/* =========================
+   Shared Form Controls
+========================= */
+button,
+input,
+select,
+textarea {
+    font: inherit;
 }
 
 button {
-    width: 20%; 
+    height: 38px;
+    padding: 0 16px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-accent);
+    color: var(--text-main);
+    cursor: pointer;
+    transition:
+        background-color var(--transition-fast),
+        opacity var(--transition-fast);
+    white-space: nowrap;
+    font-size: 0.78rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: var(--bg-accent-hover);
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="search"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--border-main);
+    border-radius: var(--radius-sm);
+    background-color: var(--bg-panel);
+    color: var(--text-main);
+    outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--text-muted);
 }
 
 textarea {
-    width: 80%;
-    font-size: 2em;
-    overflow: hidden;
-    resize: none;
-    line-height: 1.2em;
+    resize: vertical;
+    min-height: 96px;
+}
+
+/* =========================
+   Utility Classes
+========================= */
+.hidden {
+    display: none !important;
+}
+
+.text-muted {
+    color: var(--text-muted);
 }
