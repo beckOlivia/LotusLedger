@@ -13,5 +13,22 @@ document.addEventListener("DOMContentLoaded", function(event) {
     document.getElementById("btnViewStorage").addEventListener("click", function(e) {
         window.location.href = "/public/Html/viewStorage.html";
     });
+    const btnAdvancedSearch = document.getElementById("btnAdvancedSearch");
+    const txtSearch = document.getElementById("txtSearchLibrary");
+
+    btnAdvancedSearch?.addEventListener("click", function () {
+        const query = txtSearch?.value?.trim() || "";
+
+        const url = new URL("/public/Html/viewLibrary.html", window.location.origin);
+
+        // 🔑 trigger advanced search modal
+        url.searchParams.set("advanced", "true");
+
+        if (query) {
+            url.searchParams.set("query", query);
+        }
+
+        window.location.href = url.toString();
+    });
 });
 

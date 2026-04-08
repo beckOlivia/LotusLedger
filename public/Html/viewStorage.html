@@ -1,22 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-        <header class="site-header">
-        <div class="site-header__left">
-            <a href="../../index.html" class="site-header__logo">
-                LotusLedger
-            </a>
-
-            <div class="site-header__page-info">
-                <span id="currentPageTitle">Library</span>
-            </div>
-        </div>
-
-        <nav class="site-header__nav" aria-label="Primary">
-            <a href="../Html/viewLibrary.html" class="site-header__link" data-page="library">Library</a>
-            <a href="../Html/viewStorage.html" class="site-header__link" data-page="storage">Storage</a>
-            <!--<a href="../Html/viewAnalytics.html" class="site-header__link" data-page="analytics">Analytics</a>-->
-        </nav>
-    </header>
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -26,75 +9,136 @@
     <link rel="stylesheet" href="../Css/theme.css">
     <link rel="stylesheet" href="../Css/viewStuff.css">
     <link rel="stylesheet" href="../Css/modals.css">
+    <link rel="stylesheet" href="../Css/forms.css">
+    <link rel="stylesheet" href="../Css/table.css">
+    <link rel="stylesheet" href="../Css/storagePage.css">
 
     <script src="../JavaScript/addStorage.js" defer></script>
 </head>
 <body>
-    <div class="TopPage">
-        <input type="text" id="txtSearchLibrary" placeholder="Search Storage...">
-        <button id="btnAddStorage" type="button">Add Storage</button>
-        <div></div>
-        <div></div>
-        <div></div>
-    </div>
+    <header class="site-header">
+        <div class="site-header__left">
+            <a href="../../index.html" class="site-header__logo">LotusLedger</a>
+            <div class="site-header__page-info">
+                <span id="currentPageTitle">Storage</span>
+            </div>
+        </div>
 
-    <div id="listViewContainer">
-        <table class="display-table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Capacity</th>
-                    <th>Location</th>
-                    <th>Date Modified</th>
-                </tr>
-            </thead>
-            <tbody id="displayTableBody">
-                <!-- Storage rows will be added here -->
-            </tbody>
-        </table>
-    </div>
+        <nav class="site-header__nav" aria-label="Primary">
+            <a href="../Html/viewLibrary.html" class="site-header__link" data-page="library">Library</a>
+            <a href="../Html/viewStorage.html" class="site-header__link" data-page="storage">Storage</a>
+        </nav>
+    </header>
 
-    <!-- Storage Modal -->
+    <main class="page-shell storage-page-shell">
+        <section class="TopPage storage-topbar">
+            <input type="text" id="txtSearchLibrary" placeholder="Search Storage...">
+
+            <button id="btnAddStorage" type="button" class="topbar-action-btn">
+                Add Storage
+            </button>
+
+            <div class="storage-topbar__spacer"></div>
+            <div class="storage-topbar__spacer"></div>
+            <div class="storage-topbar__spacer"></div>
+        </section>
+
+        <section id="listViewContainer" class="storage-table-section">
+            <table class="display-table storage-display-table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Capacity</th>
+                        <th>Location</th>
+                        <th>Type</th>
+                        <th>Date Modified</th>
+                        <th>Options</th>
+                    </tr>
+                </thead>
+                <tbody id="displayTableBody"></tbody>
+            </table>
+        </section>
+
+        <section class="storage-footer-bar">
+            <div class="storage-footer-bar__slot"></div>
+            <div class="storage-footer-bar__center"></div>
+            <div class="storage-footer-bar__slot"></div>
+        </section>
+    </main>
+
     <div id="storageModal" class="modal">
         <div class="modal-content">
             <span id="closeStorageModal" class="close">&times;</span>
-            <h3>Add Storage</h3>
+            <h3 id="storageModalTitle">Add Storage</h3>
 
             <label for="storageName">Name</label>
             <input type="text" id="storageName" placeholder="Enter storage name">
 
-            <label for="storageCapacity">Capacity</label>
-            <input type="number" id="storageCapacity" placeholder="Enter capacity">
+            <label for="storagePreset">Box Size Preset</label>
+            <select id="storagePreset">
+                <option value="10000">10,000 Card Box</option>
+                <option value="1000">1,000 Card Box</option>
+                <option value="500">500 Card Box</option>
+                <option value="100">100 Card Box</option>
+                <option value="60">60 Card Box</option>
+                <option value="custom">Custom</option>
+            </select>
+
+            <div id="customCapacityWrapper" style="display:none;">
+                <label for="storageCapacity">Custom Capacity</label>
+                <input type="number" id="storageCapacity" placeholder="Enter custom capacity">
+            </div>
 
             <label for="storageLocation">Location</label>
             <input type="text" id="storageLocation" placeholder="Enter location">
+
+            <label for="storageType">Type</label>
+            <input type="text" id="storageType" placeholder="Binder, Box, Deck Case, etc.">
+
+            <label for="storageNotes">Notes</label>
+            <textarea id="storageNotes" placeholder="Add notes"></textarea>
 
             <button id="saveStorage" type="button">Save</button>
         </div>
     </div>
 
-    <!-- Lightbox -->
-    <div id="light" class="white_content" style="display:none;">
-        <table class="display-table">
-            <thead>
-                <tr>
-                    <th>Quantity</th>
-                    <th>Card Name</th>
-                    <th>Type</th>
-                    <th>Set</th>
-                    <th>Art</th>
-                </tr>
-            </thead>
-            <tbody id="displayMiniTableBody"></tbody>
-        </table>
+    <div id="contentsModal" class="modal">
+        <div class="modal-content storage-contents-modal">
+            <span id="closeContentsModal" class="close">&times;</span>
 
-        <a
-            href="javascript:void(0)"
-            onclick="document.getElementById('light').style.display='none';document.getElementById('fade').style.display='none'">
-            Close
-        </a>
+            <div class="storage-contents-header">
+                <div>
+                    <h3 id="contentsModalTitle">Storage Contents</h3>
+                    <div id="contentsModalSubtitle"></div>
+                </div>
+
+                <div class="storage-view-toggle">
+                    <button id="contentsListViewBtn" type="button">List View</button>
+                    <button id="contentsImageViewBtn" type="button">Image View</button>
+                </div>
+            </div>
+
+            <div id="contentsListView">
+                <table class="display-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Quantity</th>
+                            <th>Card Name</th>
+                            <th>Type</th>
+                            <th>Set</th>
+                        </tr>
+                    </thead>
+                    <tbody id="displayMiniTableBody"></tbody>
+                </table>
+            </div>
+
+            <div id="contentsImageView" style="display:none;">
+                <div id="contentsImageGrid" class="image-view-grid"></div>
+            </div>
+        </div>
     </div>
 
-    <div id="fade" class="black_overlay" style="display:none;"></div>
+    <div id="optionsMenu" class="options-menu" style="display:none; position:fixed; z-index:9999;"></div>
 </body>
 </html>

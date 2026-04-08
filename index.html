@@ -1,30 +1,33 @@
 <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>LotusLedger</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script src="/public/JavaScript/index.js"></script>
-<link rel="stylesheet" href="/public/Css/index.css">
+    <link rel="stylesheet" href="/public/Css/index.css">
+    <script src="/public/JavaScript/index.js" defer></script>
+</head>
+<body>
+    <div class="Content">
+    
+            <h2>LotusLedger</h2>
+            <h1>MTG Collection Organizer &amp; Deck Builder</h1>
 
-<html>
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>Card Search</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="">
-    </head>
-    <body>
-        <div class="Content">
-            <div class="Headers">
-                <h2><b>Lotus Ledger</b></h2>
-                <h>MTG Collection organizer & Deck Builder</h>
-            </div>
-            <textarea id="txtSearchLibrary">Seach Library</textarea>
+            <textarea
+                id="txtSearchLibrary"
+                placeholder="Search Library..."
+                aria-label="Search Library"
+            ></textarea>
+
             <div class="Buttons">
-                <button id="btnAdvancedSearch">Advanced Search</button>
-                <button id="btnViewLibrary">View Library</button>
-                <button id="btnViewStorage">View Storage</button>
-                <button id="btnViewDeck">View Deck</button>
+                <button id="btnAdvancedSearch" type="button">Advanced Search</button>
+                <button id="btnViewLibrary" type="button">View Library</button>
+                <button id="btnViewStorage" type="button">View Storage</button>
+                <button id="btnViewDeck" type="button">View Deck</button>
             </div>
-        </div>
-    </body>
+        
+    </div>
+</body>
 </html>

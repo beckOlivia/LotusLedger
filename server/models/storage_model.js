@@ -13,6 +13,16 @@ const storageSchema = new mongoose.Schema(
       type: String,
       index: true,
     },
+    capacity: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
+    capacityPreset: {
+      type: String,
+      default: "custom",
+      trim: true,
+    },
     location: {
       type: String,
       default: "",

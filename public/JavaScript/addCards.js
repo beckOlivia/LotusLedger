@@ -252,7 +252,36 @@ function bindCoreEvents() {
 
         await renderCurrentPage();
     });
+    
 }
 
 bindCoreEvents();
-loadCards();
+loadCards().then(() => {
+    checkAdvancedSearchFromURL();
+});
+
+function checkAdvancedSearchFromURL() {
+    const params = new URLSearchParams(window.location.search);
+
+    const shouldOpen = params.get("advanced") === "true";
+    const query = params.get("query");
+
+    if (!shouldOpen) return;
+
+    // wait until everything is loaded
+    setTimeout(() => {
+        openModalById("advancedSearchModal");
+
+        // preload search input if passed
+        if (query) {
+            const searchInput = document.getElementById("txtSearchLibrary");
+            if (searchInput) {
+                searchInput.value = query;
+                applySearchFilter(renderCurrentPage);
+            }
+        }
+    }, 100);
+
+    // clean URL (optional but cleaner)
+    window.history.replaceState({}, document.title, window.location.pathname);
+}

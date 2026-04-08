@@ -29,7 +29,10 @@ async function findStorageById(id) {
 async function findStorageByName(name) {
     const collection = await getStoragesCollection();
     return collection.findOne({
-        name: { $regex: `^${String(name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, $options: "i" }
+        name: {
+            $regex: `^${String(name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+            $options: "i"
+        }
     });
 }
 

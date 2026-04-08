@@ -11,11 +11,18 @@ const {
 function normalizeStorage(storage = {}) {
     const now = new Date();
 
+    const capacityPreset = String(storage.capacityPreset || "custom").trim();
+    const parsedCapacity = Number(storage.capacity || 0);
+
     return {
         name: String(storage.name || "").trim(),
-        capacity: Number(storage.capacity || 0),
+        nameLower: String(storage.name || "").trim().toLowerCase(),
+        capacity: Number.isFinite(parsedCapacity) ? parsedCapacity : 0,
+        capacityPreset,
         location: String(storage.location || "").trim(),
-        type: String(storage.type || "").trim(),
+        type: capacityPreset !== "custom"
+            ? "Box"
+            : String(storage.type || "").trim(),
         notes: String(storage.notes || "").trim(),
         createdAt: storage.createdAt || now,
         updatedAt: now
@@ -77,8 +84,26 @@ async function saveStorages(storages = []) {
 }
 
 async function editStorage(id, updates) {
-    await updateStorageById(id, {
+    const existing = await findStorageById(id);
+
+    if (!existing) {
+        throw new Error("Storage not found.");
+    }
+
+    const merged = normalizeStorage({
+        ...existing,
         ...updates,
+        createdAt: existing.createdAt
+    });
+
+    await updateStorageById(id, {
+        name: merged.name,
+        nameLower: merged.nameLower,
+        capacity: merged.capacity,
+        capacityPreset: merged.capacityPreset,
+        location: merged.location,
+        type: merged.type,
+        notes: merged.notes,
         updatedAt: new Date()
     });
 

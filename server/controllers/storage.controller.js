@@ -74,7 +74,7 @@ async function updateStorageHandler(req, res) {
         console.error("Failed to update storage:", error);
         res.status(500).json({
             success: false,
-            error: "Failed to update storage"
+            error: error.message || "Failed to update storage"
         });
     }
 }
